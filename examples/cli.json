@@ -1,0 +1,15 @@
+{
+  // Configuración de la CLI/TUI (~/.config/opencode/cli.json).
+  //
+  // "paste": "full" hace que OpenCode inserte el texto completo de la
+  // transcripción en el prompt. Sin esto, los textos largos (>150 caracteres
+  // o 3+ líneas) se colapsan a un marcador "[Pasted ~N lines]".
+  "prompt": {
+    "paste": "full"
+  }
+
+  // "plugins" solo es necesario si el servidor de OpenCode es remoto (el plugin
+  // de TUI debe ejecutarse localmente). Con un servidor local basta con
+  // opencode.jsonc o con `opencode plugin add`.
+  // "plugins": ["opencode-whisper-dictation"]
+}

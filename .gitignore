@@ -1,0 +1,28 @@
+# Dependencias y artefactos
+node_modules/
+dist/
+__pycache__/
+*.pyc
+
+# Entorno Python local (instalación manual)
+.venv/
+
+# Datos del motor si se configura 'dataDir' dentro del repo
+models/
+venv/
+bin/
+*.sha256
+
+# Grabaciones y salidas temporales
+*.wav
+*.txt
+!requirements.txt
+!README.md
+
+# Logs
+*.log
+whisper-server.log
+
+# Sistema
+.DS_Store
+Thumbs.db

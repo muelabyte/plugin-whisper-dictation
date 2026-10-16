@@ -1,0 +1,40 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  // Registro manual del plugin. Lo normal es NO escribir esto a mano: usa
+  //   opencode plugin add opencode-whisper-dictation
+  // (o `opencode plugin add github:TU_USUARIO/opencode-whisper-dictation`),
+  // que lo añade a tu configuración global automáticamente.
+  //
+  // Cualesquiera de estas formas de "package" funciona:
+  //   "opencode-whisper-dictation"                                  (npm)
+  //   "github:TU_USUARIO/opencode-whisper-dictation"                (Git)
+  //   "file:///C:/ruta/al/repo"                                     (local)
+  "plugins": [
+    {
+      "package": "opencode-whisper-dictation",
+      "options": {
+        // El motor se instala solo la primera vez (uv + Python + faster-whisper).
+        "backend": "faster-whisper",
+        "autoInstall": true,
+        "language": "es",
+        "model": "medium",
+        "computeType": "int8",
+        "keybind": "ctrl+alt+v"
+
+        // "device": "Micrófono (Realtek(R) Audio)",   // si la autodetección falla
+        // "ffmpegPath": "auto",                        // usa ffmpeg-static o el PATH
+
+        // --- Avanzado: usar un motor ya instalado (sin auto-setup) ---
+        // "serviceCommand": ["C:/ruta/.venv/Scripts/python.exe",
+        //                    "C:/ruta/whisper/server.py",
+        //                    "--model", "medium", "--compute-type", "int8"],
+        // "autoInstall": false
+
+        // --- Alternativa whisper.cpp (GGUF cuantizado, sin Python) ---
+        // "backend": "whisper.cpp",
+        // "whisperCppPath": "C:/tools/whisper.cpp/whisper-cli.exe",
+        // "whisperCppModel": "C:/models/ggml-medium-q5_0.bin"
+      }
+    }
+  ]
+}

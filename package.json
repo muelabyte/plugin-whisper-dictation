@@ -1,0 +1,65 @@
+{
+  "name": "opencode-whisper-dictation",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "Plugin de OpenCode: botón de micrófono en la barra de entrada del chat que transcribe voz a texto con Whisper medium cuantizado (local, INT8/GGUF).",
+  "license": "MIT",
+  "author": "TU NOMBRE <tu@email>",
+  "homepage": "https://github.com/TU_USUARIO/opencode-whisper-dictation#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TU_USUARIO/opencode-whisper-dictation.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TU_USUARIO/opencode-whisper-dictation/issues"
+  },
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "whisper",
+    "dictation",
+    "speech-to-text",
+    "faster-whisper",
+    "voice",
+    "tui"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./tui": "./src/tui.tsx"
+  },
+  "files": [
+    "index.ts",
+    "tui.tsx",
+    "src",
+    "whisper",
+    "scripts",
+    "examples",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "os": [
+    "win32",
+    "darwin",
+    "linux"
+  ],
+  "dependencies": {
+    "@opencode/plugin": "latest"
+  },
+  "optionalDependencies": {
+    "ffmpeg-static": "^5.2.0"
+  },
+  "peerDependencies": {
+    "@opentui/core": ">=0.5.17",
+    "@opentui/solid": ">=0.5.17",
+    "solid-js": ">=1.9.0"
+  },
+  "devDependencies": {
+    "@opentui/core": ">=0.5.17",
+    "@opentui/solid": ">=0.5.17",
+    "solid-js": ">=1.9.0",
+    "typescript": "^5.6.0"
+  }
+}
