@@ -23,6 +23,9 @@ bin/
 *.log
 whisper-server.log
 
+# Paquetes npm
+*.tgz
+
 # Sistema
 .DS_Store
 Thumbs.db

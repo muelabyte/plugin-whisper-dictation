@@ -15,11 +15,12 @@ entrada**, listo para editar y enviar.
 ## ⚡ Instalación (una línea)
 
 ```bash
-opencode plugin add github:TU_USUARIO/opencode-whisper-dictation
-```
+# Opción A — desde GitHub (no requiere publicar nada)
+opencode plugin add github:muelabyte/opencode-whisper-dictation
 
-> Si publicas el paquete en npm, también vale:
-> `opencode plugin add opencode-whisper-dictation`
+# Opción B — desde npm (más rápido de instalar)
+opencode plugin add opencode-whisper-dictation
+```
 
 Eso es todo. La **primera vez** que abras OpenCode, el plugin prepara el motor
 en segundo plano y te muestra avisos de progreso:
@@ -206,32 +207,43 @@ Ver `examples/whisper-cpp.ps1`.
 
 ## 🚀 Publicar (para quien mantiene el repo)
 
+El repositorio ya está inicializado y con el commit inicial hecho. Solo faltan
+dos pasos: subirlo a GitHub y publicarlo en npm.
+
 ### 1. Subir a GitHub
 
 ```bash
-git init && git add -A && git commit -m "feat: dictado por voz con Whisper"
-git branch -M main
-git remote add origin https://github.com/TU_USUARIO/opencode-whisper-dictation.git
+git remote add origin https://github.com/muelabyte/opencode-whisper-dictation.git
 git push -u origin main
 ```
 
-Sustituye `TU_USUARIO` en `package.json` (`author`, `repository`, `homepage`,
-`bugs`) y en este README. Con eso, cualquiera instala con:
+Con eso, cualquiera instala con:
 
 ```bash
-opencode plugin add github:TU_USUARIO/opencode-whisper-dictation
+opencode plugin add github:muelabyte/opencode-whisper-dictation
 ```
 
-### 2. Publicar en npm (opcional)
-
-Para que además funcione `opencode plugin add opencode-whisper-dictation`:
+### 2. Publicar en npm
 
 ```bash
-npm publish --access public
+npm login
+npm publish
 ```
 
-El `package.json` ya expone los entrypoints que OpenCode espera
-(`exports["./tui"]` y `exports["."]`) y declara `files` con lo necesario.
+Ya está todo preparado: el nombre `opencode-whisper-dictation` está libre, y el
+`package.json` incluye `publishConfig.access: "public"`, expone los entrypoints
+que OpenCode espera (`exports["."]` y `exports["./tui"]`) y declara `files` con
+lo necesario. Comprueba el contenido del paquete antes de publicar con:
+
+```bash
+npm pack --dry-run
+```
+
+Después, cualquiera instala con:
+
+```bash
+opencode plugin add opencode-whisper-dictation
+```
 
 > **Nota sobre entrypoints:** al instalar **como paquete** (npm/Git), OpenCode
 > resuelve `./tui` y `.` desde `exports`. Al registrar un **directorio local**,

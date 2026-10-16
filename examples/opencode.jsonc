@@ -2,12 +2,12 @@
   "$schema": "https://opencode.ai/config.json",
   // Registro manual del plugin. Lo normal es NO escribir esto a mano: usa
   //   opencode plugin add opencode-whisper-dictation
-  // (o `opencode plugin add github:TU_USUARIO/opencode-whisper-dictation`),
+  // (o `opencode plugin add github:muelabyte/opencode-whisper-dictation`),
   // que lo añade a tu configuración global automáticamente.
   //
   // Cualesquiera de estas formas de "package" funciona:
   //   "opencode-whisper-dictation"                                  (npm)
-  //   "github:TU_USUARIO/opencode-whisper-dictation"                (Git)
+  //   "github:muelabyte/opencode-whisper-dictation"                 (Git)
   //   "file:///C:/ruta/al/repo"                                     (local)
   "plugins": [
     {
