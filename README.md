@@ -183,6 +183,19 @@ if (result.status === "transcribed") {
 
 ---
 
+## 🤖 DeepSeek Harness
+
+El repositorio incluye además **`dsh-whisper-provider/`**: un paquete npm que
+aporta dictado Whisper en español a la UI de voz de **DeepSeek Harness
+0.2.1-rc.2** (Escritorio y Web). Reutiliza el micrófono y la inserción en el
+borrador de DSH y aprovisiona su motor en `%LOCALAPPDATA%\dsh-whisper`, sin
+depender de ninguna carpeta del repositorio.
+
+Instalación, configuración y desinstalación:
+[dsh-whisper-provider/README.md](dsh-whisper-provider/README.md).
+
+---
+
 ## 🧰 Instalación manual del motor (alternativa)
 
 Si prefieres gestionar Python tú mismo:
@@ -289,18 +302,20 @@ opencode-whisper-dictation/
 ├─ index.ts / tui.tsx          # shims de raíz para registro local
 ├─ src/
 │  ├─ index.ts                 # plugin lado servidor
-│  ├─ tui.tsx                  # botón 🎤 + keymap + flujo grabar/transcribir
+│  ├─ tui.tsx                  # adaptador OpenCode: botón 🎤 + keymap + pegado
+│  ├─ dictation.ts             # núcleo: grabar→transcribir (sin OpenCode)
 │  ├─ config.ts                # opciones y valores por defecto
 │  ├─ engine.ts                # auto-instalación y arranque del sidecar
 │  ├─ ffmpeg.ts                # resolución de ffmpeg (ffmpeg-static / PATH)
 │  ├─ recorder.ts              # captura multiplataforma (dshow/avfoundation/pulse)
 │  ├─ transcribe.ts            # cliente del sidecar / backend whisper.cpp
 │  └─ clipboard.ts             # escritura al portapapeles multiplataforma
-├─ whisper/
-│  ├─ server.py                # sidecar HTTP (faster-whisper)
-│  └─ requirements.txt
+├─ whisper/                    # sidecar HTTP (faster-whisper)
 ├─ scripts/                    # instalación/arranque manual (fallback)
-└─ examples/                   # opencode.jsonc, cli.json, whisper-cpp.ps1
+├─ examples/                   # opencode.jsonc, cli.json, whisper-cpp.ps1
+├─ dsh-whisper-provider/       # paquete npm para DeepSeek Harness
+├─ .github/workflows/ci.yml    # typecheck + tests + pack
+└─ estado-proyecto/            # documento de traspaso
 ```
 
 ## 📄 Licencia
