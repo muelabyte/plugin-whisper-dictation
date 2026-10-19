@@ -21,6 +21,12 @@
     "LICENSE"
   ],
   "engines": { "node": ">=20" },
+  "scripts": {
+    "typecheck": "npm --prefix opencode run typecheck",
+    "test": "npm --prefix dsh-whisper-provider test",
+    "pack:check": "npm --prefix opencode run pack:check",
+    "pack:check:dsh": "npm --prefix dsh-whisper-provider run pack:check"
+  },
   "os": ["win32", "darwin", "linux"],
   "dependencies": { "@opencode/plugin": "^2.0.32" },
   "optionalDependencies": { "ffmpeg-static": "^5.2.0" },

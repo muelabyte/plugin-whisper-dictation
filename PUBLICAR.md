@@ -1,76 +1,97 @@
-# Publicar el proyecto (mantenedor)
+# Publicar y mantener los paquetes (mantenedor)
 
-Guía para publicar en GitHub y npm. Requiere tus cuentas y credenciales.
+Guía para publicar en npm y GitHub. La **primera publicación ya está hecha**
+(2026-10-19): `opencode-whisper-dictation@0.2.1` y `dsh-whisper-provider@0.2.0`.
+Esta guía sirve ya sobre todo para **sacar una versión nueva**.
 
 ## Antes de publicar
 
-- [ ] `cd opencode; npm run typecheck` y `cd ../dsh-whisper-provider; npm test` en verde.
-- [ ] `npm run pack:check` en `opencode/` y en `dsh-whisper-provider/`.
-- [ ] Versiones revisadas: `opencode-whisper-dictation` `0.2.0`,
-  `dsh-whisper-provider` `0.2.0`.
-- [ ] `CHANGELOG.md` actualizado en ambos paquetes.
-- [ ] Repo de GitHub creado y subido.
+- [ ] `cd opencode; npm run typecheck` y `npm run pack:check`.
+- [ ] `npm --prefix dsh-whisper-provider test` y `npm run pack:check`.
+- [ ] Versiones revisadas en **el `package.json` del paquete que cambia** (no en
+      la raíz: es privada). Hoy: `opencode-whisper-dictation` `0.2.1`,
+      `dsh-whisper-provider` `0.2.0`.
+- [ ] `CHANGELOG.md` actualizado en ese paquete (fecha y cambios).
+- [ ] `estado-proyecto/ESTADO-PROYECTO.md`: estado y una línea nueva en el historial.
+- [ ] Probado el paquete instalado de verdad (no vale solo el typecheck).
 
-La `package.json` de la raíz es un **envoltorio privado** para instalar desde
-Git; no se publica.
+## 1. Publicar una versión nueva en npm
 
-## 1. GitHub
+```powershell
+# Desde la carpeta del paquete que cambia
+cd "C:\DESARROLLO AGENTES\proyecto-addtranscripcion-deepseek\opencode"
+npm version patch --no-git-tag-version   # o minor/major, según el cambio
+npm publish                              # token con bypass de 2FA o: npm publish --otp=123456
 
-Crea el repositorio **`muelabyte/plugin-whisper-dictation`** (sin README, sin
-licencia, sin `.gitignore`) y sube:
+cd "..\dsh-whisper-provider"
+npm version patch --no-git-tag-version
+npm publish
+```
+
+Notas:
+
+- La raíz es un **envoltorio privado** (`"private": true`): nunca `npm publish`
+  ahí.
+- Si npm responde **E403 de 2FA**, usa un token granular con *bypass 2FA* o
+  `--otp`. No pegues tokens en el chat ni en commits.
+- Si una versión sale mal: `npm deprecate <paquete>@<versión> "motivo"` y publica
+  un parche. `npm unpublish` solo dentro de las 72 h y con cuidado.
+- Verifica siempre:
+
+```powershell
+npm view opencode-whisper-dictation version
+npm view dsh-whisper-provider version
+```
+
+## 2. GitHub
+
+El repositorio `muelabyte/plugin-whisper-dictation` ya existe y tiene `origin`
+configurado. **Hoy está privado**: para instalar desde GitHub (y para el badge
+de CI) hay que ponerlo **público** en *Settings → General → Danger Zone*.
 
 ```powershell
 cd "C:\DESARROLLO AGENTES\proyecto-addtranscripcion-deepseek"
-git remote add origin https://github.com/muelabyte/plugin-whisper-dictation.git
-git push -u origin main
+git push origin main
+git tag -a v<versión> -m "v<versión>"   # p. ej. v0.2.1
+git push origin v<versión>
 ```
 
-Comprueba la pestaña **Actions**: debe pasar el typecheck (Ubuntu/Windows),
-las pruebas del bundle de DSH y el `npm pack`.
+- El tag `v0.2.0` apunta a `f1b59d4` (commit de la reestructuración); `0.2.1`
+  vive en `679b617` y **aún no tiene tag**.
+- Los paquetes tienen versiones independientes: si solo cambia uno, etiqueta con
+  la versión de ese paquete y dilo en el mensaje del tag.
+- Tras el push, revisa **Actions**: typecheck (Ubuntu/Windows, Node 20/22),
+  pruebas del bundle de DSH y `npm pack`. La CI está escrita, pero todavía no se
+  ha verificado una ejecución real desde aquí (repo privado, sin `gh`).
 
-## 2. npm
+## 3. Comprobar la instalación de usuario
 
-Inicia sesión (2FA incluida) y publica los dos paquetes:
-
-```powershell
-cd "C:\DESARROLLO AGENTES\proyecto-addtranscripcion-deepseek\opencode"
-npm login
-npm publish
-
-cd "C:\DESARROLLO AGENTES\proyecto-addtranscripcion-deepseek\dsh-whisper-provider"
-npm publish
-```
-
-Nombres comprobados como libres: `dsh-whisper-provider` y
-`opencode-whisper-dictation`. No ejecutes `npm publish` en la raíz: es privada.
-
-Verifica:
-
-```powershell
-npm view dsh-whisper-provider version
-npm view opencode-whisper-dictation version
-```
-
-## 3. Prueba posterior a la publicación
-
-- **DSH**: Plugins → Add plugin → `dsh-whisper-provider` → Install → Enable now
-  → Download and prepare → dictar.
 - **OpenCode**: `opencode plugin add opencode-whisper-dictation`, reiniciar y
-  dictar en una sesión.
+  dictar en una sesión de la TUI.
+- **DSH**: Plugins → Add plugin → `dsh-whisper-provider` → Install →
+  Enable now → Download and prepare → dictar. Tras instalar o actualizar, cierra
+  DSH **desde la bandeja** y vuelve a abrirlo.
+- **Desde GitHub** (solo si el repo es público):
+  `opencode plugin add github:muelabyte/plugin-whisper-dictation` o, en DSH,
+  `git+https://github.com/muelabyte/plugin-whisper-dictation.git#path:/dsh-whisper-provider`.
+  El `#path:` es obligatorio para DSH: el paquete vive en un subdirectorio.
 
-## 4. Si algo sale mal
+## 4. Rollback
 
-- **npm**: `npm deprecate <paquete>@<versión> "motivo"`; `npm unpublish` solo
-  dentro de las 72 h y con cuidado.
-- **GitHub**: revierte el commit o crea un tag de la versión anterior.
-- **DSH**: desinstala el bundle; la versión anterior se reinstala desde su
-  tarball o desde npm si sigue publicada.
+- **npm**: deprecar la versión mala y publicar un parche; `npm unpublish` solo
+  en las primeras 72 h.
+- **GitHub**: revierte el commit o etiqueta la versión anterior.
+- **DSH**: desinstala el bundle y reinstala la versión anterior; el motor queda
+  en caché (no se borra al desinstalar).
+- **OpenCode**: cambia la versión en `opencode.jsonc`
+  (`"opencode-whisper-dictation@<versión>"`) y reinicia el servicio.
 
-## Datos que hacen falta
+## Estado de la primera publicación (referencia)
 
-1. Confirmación de los nombres y versiones (`dsh-whisper-provider@0.2.0`,
-   `opencode-whisper-dictation@0.2.0`).
-2. Tu cuenta de npm con 2FA (el `npm login` lo ejecutas tú; no compartas tokens
-   por el chat).
-3. El repositorio de GitHub creado y su URL.
-4. Decidir si se publica también el plugin de OpenCode en esta misma tanda.
+| Elemento | Valor |
+|---|---|
+| npm OpenCode | `0.2.1` (latest); `0.2.0` deprecada por el crash de TUI |
+| npm DSH | `0.2.0` (latest) |
+| Repo | `muelabyte/plugin-whisper-dictation`, `main` = `679b617` |
+| Tag | `v0.2.0` → `f1b59d4` |
+| Visibilidad | **privado** (pendiente de hacer público) |

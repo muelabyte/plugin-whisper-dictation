@@ -10,6 +10,11 @@ entrada**, listo para editar y enviar.
 - 🚀 **Instalación de una línea**: el motor (Python + `faster-whisper` + modelo)
   se instala solo la primera vez usando [`uv`](https://docs.astral.sh/uv/).
 
+> **Estado:** versión `0.2.1`, publicada en npm y probada en **Windows 11** con
+> OpenCode `2.0.32`. macOS y Linux están implementados pero **sin probar**.
+> Traspaso, decisiones y pendientes:
+> [ESTADO-PROYECTO.md](https://github.com/muelabyte/plugin-whisper-dictation/blob/main/estado-proyecto/ESTADO-PROYECTO.md).
+
 > ### ⚠️ Avisos antes de instalar
 >
 > - **Solo OpenCode v2 en la TUI.** OpenCode Desktop/web no admite plugins de interfaz.
@@ -27,11 +32,12 @@ entrada**, listo para editar y enviar.
 ## ⚡ Instalación (una línea)
 
 ```bash
-# Opción A — desde GitHub (no requiere publicar nada)
-opencode plugin add github:muelabyte/plugin-whisper-dictation
-
-# Opción B — desde npm (más rápido de instalar)
+# Opción A — desde npm (recomendado; puedes fijar la versión)
 opencode plugin add opencode-whisper-dictation
+# opencode plugin add opencode-whisper-dictation@0.2.1
+
+# Opción B — desde GitHub (el repositorio debe ser público)
+opencode plugin add github:muelabyte/plugin-whisper-dictation
 ```
 
 Eso es todo. La **primera vez** que abras OpenCode, el plugin prepara el motor
@@ -63,9 +69,9 @@ Luego **reinicia OpenCode** (`opencode service restart`) y abre una sesión.
 
 | SO | Captura de audio | Estado |
 |---|---|---|
-| **Windows** | `dshow` | ✅ Probado. |
-| **macOS** | `avfoundation` | ✅ Soportado (pide permiso de micrófono a ffmpeg la 1.ª vez). |
-| **Linux** | `pulse` | ✅ Soportado (requiere PulseAudio). |
+| **Windows** | `dshow` | ✅ Probado (Windows 11). |
+| **macOS** | `avfoundation` | 🟡 Implementado, sin probar (pide permiso de micrófono a ffmpeg la 1.ª vez). |
+| **Linux** | `pulse` | 🟡 Implementado, sin probar (requiere PulseAudio). |
 
 ---
 
@@ -231,7 +237,7 @@ subdirectorio; instalar solo el repositorio daría el plugin de OpenCode.
 >   vuelve a abrirlo para cargar la interfaz.
 
 Instalación, configuración y desinstalación:
-[dsh-whisper-provider/README.md](dsh-whisper-provider/README.md).
+[README de dsh-whisper-provider](https://github.com/muelabyte/plugin-whisper-dictation/tree/main/dsh-whisper-provider#readme).
 
 ---
 

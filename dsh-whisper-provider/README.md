@@ -16,6 +16,11 @@ inserción en el borrador que ya trae Harness, y solo aporta el reconocedor.
 > - Si el micrófono no aparece tras instalar o actualizar, cierra DSH **desde la
 >   bandeja del sistema** y vuelve a abrirlo.
 
+> **Estado:** versión `0.2.0`, publicada en npm y probada en **Windows 11** con
+> DSH `0.2.1-rc.2` (Escritorio). Web usa el mismo cliente, pero solo se ha
+> probado en local/loopback. Traspaso, decisiones y pendientes:
+> [ESTADO-PROYECTO.md](https://github.com/muelabyte/plugin-whisper-dictation/blob/main/estado-proyecto/ESTADO-PROYECTO.md).
+
 ## Por qué existe
 
 DSH ya incluye un dictado experimental basado en **SenseVoice**, pero sus
@@ -151,10 +156,17 @@ todo, elimina la carpeta de datos de usuario.
 
 ## Desarrollo
 
+No tiene dependencias de runtime propias: las pruebas corren directamente con
+Node ≥ 20.
+
 ```bash
-npm test          # pruebas del proveedor y del paquete
+npm test          # pruebas del proveedor y del paquete (9)
 npm run pack:check
 ```
 
-`engine/server.py` debe ser idéntico a `whisper/server.py` del repositorio; la
-prueba falla si divergen.
+`engine/server.py` debe ser idéntico a `opencode/whisper/server.py` del
+repositorio; la prueba falla si divergen. La CI
+(`.github/workflows/ci.yml`) ejecuta lo mismo más `node --check` de `lib/`.
+
+Al publicar una versión nueva, sube la versión en `package.json`, actualiza
+`CHANGELOG.md` y sigue [PUBLICAR.md](https://github.com/muelabyte/plugin-whisper-dictation/blob/main/PUBLICAR.md).
