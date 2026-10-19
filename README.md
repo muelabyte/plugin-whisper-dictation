@@ -28,7 +28,7 @@ entrada**, listo para editar y enviar.
 
 ```bash
 # Opción A — desde GitHub (no requiere publicar nada)
-opencode plugin add github:muelabyte/opencode-whisper-dictation
+opencode plugin add github:muelabyte/plugin-whisper-dictation
 
 # Opción B — desde npm (más rápido de instalar)
 opencode plugin add opencode-whisper-dictation
@@ -215,10 +215,10 @@ depender de ninguna carpeta del repositorio.
 En **Add plugin** pega:
 
 ```
-git+https://github.com/muelabyte/opencode-whisper-dictation.git#path:/dsh-whisper-provider
+git+https://github.com/muelabyte/plugin-whisper-dictation.git#path:/dsh-whisper-provider
 ```
 
-o `github:muelabyte/opencode-whisper-dictation#path:/dsh-whisper-provider`.
+o `github:muelabyte/plugin-whisper-dictation#path:/dsh-whisper-provider`.
 El `#path:/dsh-whisper-provider` es obligatorio: el paquete vive en un
 subdirectorio; instalar solo el repositorio daría el plugin de OpenCode.
 
@@ -289,7 +289,7 @@ Ver `examples/whisper-cpp.ps1`.
 
 Guía completa: [PUBLICAR.md](PUBLICAR.md). Resumen:
 
-1. **GitHub**: crea `muelabyte/opencode-whisper-dictation` y sube `main`.
+1. **GitHub**: crea `muelabyte/plugin-whisper-dictation` y sube `main`.
 2. **npm**: publica los dos paquetes (primero el de DSH):
    ```powershell
    cd dsh-whisper-provider; npm publish

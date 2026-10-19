@@ -5,13 +5,13 @@
   "description": "Plugin de OpenCode: botón de micrófono en la barra de entrada del chat que transcribe voz a texto con Whisper medium cuantizado (local, INT8/GGUF).",
   "license": "MIT",
   "author": "muelabyte <muelabyte@users.noreply.github.com>",
-  "homepage": "https://github.com/muelabyte/opencode-whisper-dictation#readme",
+  "homepage": "https://github.com/muelabyte/plugin-whisper-dictation#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/muelabyte/opencode-whisper-dictation.git"
+    "url": "git+https://github.com/muelabyte/plugin-whisper-dictation.git"
   },
   "bugs": {
-    "url": "https://github.com/muelabyte/opencode-whisper-dictation/issues"
+    "url": "https://github.com/muelabyte/plugin-whisper-dictation/issues"
   },
   "keywords": [
     "opencode",

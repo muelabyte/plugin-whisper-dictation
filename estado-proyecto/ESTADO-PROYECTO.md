@@ -282,7 +282,7 @@ instalaciones por nombre.
 **2. Subir:**
 ```powershell
 cd "C:\DESARROLLO AGENTES\proyecto-addtranscripcion-deepseek"
-git remote add origin https://github.com/muelabyte/opencode-whisper-dictation.git
+git remote add origin https://github.com/muelabyte/plugin-whisper-dictation.git
 git push -u origin main
 ```
 
@@ -295,7 +295,7 @@ npm publish
 **Resultado para el usuario final:**
 ```bash
 opencode plugin add opencode-whisper-dictation
-# o:  opencode plugin add github:muelabyte/opencode-whisper-dictation
+# o:  opencode plugin add github:muelabyte/plugin-whisper-dictation
 ```
 
 ### Mejoras opcionales (no bloqueantes)

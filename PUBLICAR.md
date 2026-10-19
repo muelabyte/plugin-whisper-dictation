@@ -12,12 +12,12 @@ Guía para publicar en GitHub y npm. Requiere tus cuentas y credenciales.
 
 ## 1. GitHub
 
-Crea el repositorio **`muelabyte/opencode-whisper-dictation`** (sin README, sin
+Crea el repositorio **`muelabyte/plugin-whisper-dictation`** (sin README, sin
 licencia, sin `.gitignore`) y sube:
 
 ```powershell
 cd "C:\DESARROLLO AGENTES\proyecto-addtranscripcion-deepseek"
-git remote add origin https://github.com/muelabyte/opencode-whisper-dictation.git
+git remote add origin https://github.com/muelabyte/plugin-whisper-dictation.git
 git push -u origin main
 ```
 

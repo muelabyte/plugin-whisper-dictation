@@ -41,14 +41,14 @@
   ],
   "license": "MIT",
   "author": "muelabyte <muelabyte@users.noreply.github.com>",
-  "homepage": "https://github.com/muelabyte/opencode-whisper-dictation#readme",
+  "homepage": "https://github.com/muelabyte/plugin-whisper-dictation#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/muelabyte/opencode-whisper-dictation.git",
+    "url": "git+https://github.com/muelabyte/plugin-whisper-dictation.git",
     "directory": "dsh-whisper-provider"
   },
   "bugs": {
-    "url": "https://github.com/muelabyte/opencode-whisper-dictation/issues"
+    "url": "https://github.com/muelabyte/plugin-whisper-dictation/issues"
   },
   "publishConfig": {
     "access": "public"

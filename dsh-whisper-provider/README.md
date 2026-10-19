@@ -42,10 +42,10 @@ permiso de micrófono.
 En **Add plugin** pega:
 
 ```
-git+https://github.com/muelabyte/opencode-whisper-dictation.git#path:/dsh-whisper-provider
+git+https://github.com/muelabyte/plugin-whisper-dictation.git#path:/dsh-whisper-provider
 ```
 
-o la forma corta `github:muelabyte/opencode-whisper-dictation#path:/dsh-whisper-provider`.
+o la forma corta `github:muelabyte/plugin-whisper-dictation#path:/dsh-whisper-provider`.
 El `#path:/dsh-whisper-provider` es **obligatorio**: el paquete vive en un
 subdirectorio del repositorio; instalar solo el repo daría el plugin de OpenCode.
 El repositorio debe ser público.
