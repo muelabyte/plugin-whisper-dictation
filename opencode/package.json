@@ -1,6 +1,6 @@
 {
   "name": "opencode-whisper-dictation",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "description": "Plugin de OpenCode: botón de micrófono en la barra de entrada del chat que transcribe voz a texto con Whisper medium cuantizado (local, INT8/GGUF).",
   "license": "MIT",
@@ -36,6 +36,7 @@
     "whisper",
     "scripts",
     "examples",
+    "tsconfig.json",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"

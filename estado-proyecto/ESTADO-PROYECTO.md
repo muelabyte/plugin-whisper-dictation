@@ -455,3 +455,4 @@ Después, reiniciar y comprobar el dictado.
 | 2026-10-18 | Preparación del release: avisos en ambos README, CHANGELOGs, `PUBLICAR.md`, deps fijadas (`@opencode/plugin ^2.0.32`, `faster-whisper==1.2.1`) y auto-instalación de OpenCode validada (24 s). |
 | 2026-10-18 | Reestructuración: OpenCode pasa a `opencode/`; la raíz conserva shims y un `package.json` privado para que la instalación desde Git siga funcionando. Repo: `plugin-whisper-dictation`. |
 | 2026-10-19 | Publicado en npm: `opencode-whisper-dictation@0.2.0` y `dsh-whisper-provider@0.2.0`. Verificada la instalación desde el registro. |
+| 2026-10-19 | Fix 0.2.1 (OpenCode): el paquete npm no incluía `tsconfig.json`, el JSX se compilaba sin `@opentui/solid` y la TUI crasheaba con `remove expects a renderable child object`. Se publica el tsconfig y el pragma; 0.2.0 deprecada. |

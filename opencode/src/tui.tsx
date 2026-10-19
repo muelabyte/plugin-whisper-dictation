@@ -1,3 +1,4 @@
+/** @jsxImportSource @opentui/solid */
 import { Plugin, usePlugin } from "@opencode/plugin/tui"
 import { createSignal } from "solid-js"
 import { writeClipboard } from "./clipboard"

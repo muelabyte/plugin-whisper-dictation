@@ -1,6 +1,6 @@
 {
   "name": "opencode-whisper-dictation",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
   "description": "Envoltorio de compatibilidad para instalar el plugin de OpenCode desde Git; el paquete real vive en opencode/.",
@@ -17,6 +17,7 @@
     "opencode/whisper",
     "opencode/scripts",
     "opencode/examples",
+    "opencode/tsconfig.json",
     "LICENSE"
   ],
   "engines": { "node": ">=20" },

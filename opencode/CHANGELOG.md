@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 — 2026-10-19
+
+- Corregido el crash de la TUI `remove expects a renderable child object`: el
+  paquete npm no incluía `tsconfig.json` y el JSX se compilaba sin
+  `jsxImportSource: @opentui/solid`. Ahora se publica el tsconfig y
+  `src/tui.tsx` lleva el pragma `@jsxImportSource`.
+
 ## 0.2.0 — 2026-10-18
 
 Primera versión pública del plugin de OpenCode.
