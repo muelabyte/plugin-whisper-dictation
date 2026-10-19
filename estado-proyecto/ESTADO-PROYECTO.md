@@ -33,7 +33,7 @@
 | Licencia | ✅ Hecho | Copyright corregido a `muelabyte` |
 | Repo git local | ✅ Hecho | **3** commits en `main` |
 | Subir a GitHub | ⬜ **Pendiente** | requiere al usuario |
-| Publicar en npm | ⬜ **Pendiente** | **bloqueado** hasta validar la auto-instalación (§8.1) |
+| Publicar en npm | ✅ **Publicado** | `opencode-whisper-dictation@0.2.0` y `dsh-whisper-provider@0.2.0` |
 
 ---
 
@@ -263,31 +263,22 @@ ffmpeg y con el modelo `medium` (la descarga de ~1,5 GB no se midió aquí).
   `faster-whisper==1.2.1`); `ffmpeg-static` sigue siendo opcional (si falla su
   postinstall, se cae a `ffmpeg` del PATH, que el usuario medio no tiene).
 
-### 8.3 Publicación
+### 8.3 Publicación — ✅ hecha
 
-Guía completa: `PUBLICAR.md`. Orden: subir a GitHub, publicar primero
-`dsh-whisper-provider` y después `opencode-whisper-dictation`, y probar ambas
-instalaciones por nombre.
+- **GitHub**: `main` en `muelabyte/plugin-whisper-dictation` (privado hasta que
+  se cambie la visibilidad), tag `v0.2.0`.
+- **npm**: `opencode-whisper-dictation@0.2.0` y `dsh-whisper-provider@0.2.0`.
+- El `package.json` de la raíz es un **envoltorio privado**; no se publica.
+- Guía de mantenimiento: `PUBLICAR.md`.
 
-**1. Crear repo vacío en GitHub** (`opencode-whisper-dictation`, sin README/license).
-
-**2. Subir:**
-```powershell
-cd "C:\DESARROLLO AGENTES\proyecto-addtranscripcion-deepseek"
-git remote add origin https://github.com/muelabyte/plugin-whisper-dictation.git
-git push -u origin main
-```
-
-**3. Publicar en npm:**
-```powershell
-npm login
-npm publish
-```
+**Pendiente de comprobar:** instalar por nombre en DSH y en OpenCode en una
+máquina limpia. En DSH, sustituir el tarball 0.2.0 por la instalación desde npm
+para que la ficha muestre la versión.
 
 **Resultado para el usuario final:**
 ```bash
 opencode plugin add opencode-whisper-dictation
-# o:  opencode plugin add github:muelabyte/plugin-whisper-dictation
+# y en DSH: Plugins → Add plugin → dsh-whisper-provider
 ```
 
 ### Mejoras opcionales (no bloqueantes)
@@ -425,12 +416,12 @@ misma aplicación (aquí, `DSH_PROFILE=desktop` y `DSH_WEB_URL=http://127.0.0.1:
 | `npm pack` del bundle | ✅ 14 archivos, 37,4 kB |
 | Contrato `Transcript` (objeto estricto) | ✅ 0.1.1, verificado con audio real |
 | UI adaptada: id propio e inserción al terminar | ✅ 0.2.0, test estático |
-| Instalación por nombre y botón real en la UI | ⏳ pendiente de publicar en npm |
+| Instalación por nombre y botón real en la UI | ⏳ npm publicado; falta probar la instalación por nombre |
 
-**Pendiente:** reinstalar la **0.2.0** (quitar la 0.1.1 e instalar el nuevo
-tarball) y comprobar que el aviso *"Your draft changed"* desaparece al escribir
-durante el dictado. Después, `npm publish` (requiere tus credenciales) para
-instalar por nombre desde Plugins.
+**Pendiente:** en DSH, desinstalar el tarball 0.2.0 e instalar por nombre
+(`dsh-whisper-provider`) para que la ficha muestre la versión; en OpenCode,
+sustituir el registro local por `opencode plugin add opencode-whisper-dictation`.
+Después, reiniciar y comprobar el dictado.
 
 > ⚠️ No activar a la vez el bundle oficial **Voice Input**: inserta las mismas
 > filas (`speech-to-text`, `api-speech-to-text`) y hay conflicto
@@ -463,3 +454,4 @@ instalar por nombre desde Plugins.
 | 2026-10-18 | 0.2.0: UI de voz vendorizada (MIT) con inserción en el cursor al terminar; desaparece el aviso de borrador cambiado. 9/9 tests; 13 archivos, 36,5 kB. |
 | 2026-10-18 | Preparación del release: avisos en ambos README, CHANGELOGs, `PUBLICAR.md`, deps fijadas (`@opencode/plugin ^2.0.32`, `faster-whisper==1.2.1`) y auto-instalación de OpenCode validada (24 s). |
 | 2026-10-18 | Reestructuración: OpenCode pasa a `opencode/`; la raíz conserva shims y un `package.json` privado para que la instalación desde Git siga funcionando. Repo: `plugin-whisper-dictation`. |
+| 2026-10-19 | Publicado en npm: `opencode-whisper-dictation@0.2.0` y `dsh-whisper-provider@0.2.0`. Verificada la instalación desde el registro. |
