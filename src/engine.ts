@@ -18,7 +18,7 @@
 
 import { execFile, spawn, type ChildProcess } from "node:child_process"
 import { createHash } from "node:crypto"
-import { closeSync, existsSync, openSync } from "node:fs"
+import { closeSync, createWriteStream, existsSync, openSync } from "node:fs"
 import { chmod, copyFile, mkdir, mkdtemp, readdir, readFile, rm, stat, writeFile } from "node:fs/promises"
 import { homedir, tmpdir } from "node:os"
 import { dirname, join } from "node:path"
@@ -141,7 +141,8 @@ async function findFile(directory: string, name: string): Promise<string | undef
 }
 
 function uvAsset(): { url: string; kind: "zip" | "tar.gz"; member: string } {
-  const arm = process.arch === "arm64" || process.arch === "aarch64"
+  // Node reporta "arm64" (nunca "aarch64"). Comparar con "aarch64" era código muerto.
+  const arm = process.arch === "arm64"
   const release = "https://github.com/astral-sh/uv/releases/latest/download"
   if (isWindows) {
     const target = arm ? "aarch64-pc-windows-msvc" : "x86_64-pc-windows-msvc"

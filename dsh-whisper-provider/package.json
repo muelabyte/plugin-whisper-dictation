@@ -1,0 +1,57 @@
+{
+  "name": "dsh-whisper-provider",
+  "version": "0.1.1",
+  "description": "Dictado local con Whisper para DeepSeek Harness: proveedor del servicio de voz con motor autosuficiente",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./cordis.patch.yml": "./cordis.patch.yml"
+  },
+  "files": [
+    "lib",
+    "engine",
+    "cordis.patch.yml",
+    "locale",
+    "icon.svg",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/provider.test.mjs",
+    "pack:check": "npm pack --dry-run"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "whisper",
+    "dictation",
+    "speech-to-text",
+    "faster-whisper"
+  ],
+  "license": "MIT",
+  "author": "muelabyte <muelabyte@users.noreply.github.com>",
+  "homepage": "https://github.com/muelabyte/opencode-whisper-dictation#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/muelabyte/opencode-whisper-dictation.git",
+    "directory": "dsh-whisper-provider"
+  },
+  "bugs": {
+    "url": "https://github.com/muelabyte/opencode-whisper-dictation/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

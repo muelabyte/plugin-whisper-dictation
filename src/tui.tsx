@@ -1,33 +1,22 @@
 import { Plugin, usePlugin } from "@opencode/plugin/tui"
 import { createSignal } from "solid-js"
 import { writeClipboard } from "./clipboard"
-import { resolveConfig, type PluginConfig } from "./config"
-import { ensureService } from "./engine"
-import { resolveFfmpegPath } from "./ffmpeg"
-import { Recorder } from "./recorder"
-import { transcribe } from "./transcribe"
-
-type DictationState = "idle" | "recording" | "transcribing"
+import { resolveConfig } from "./config"
+import { createDictation, type DictationState } from "./dictation"
 
 /**
- * Plugin de TUI: agrega un botón de micrófono en la barra de entrada del chat,
- * graba el micrófono, transcribe con Whisper local y vuelca el texto en la caja
- * de entrada.
+ * Adaptador de OpenCode para el núcleo de dictado (`./dictation`).
  *
- * La inserción se hace copiando la transcripción al portapapeles y disparando
- * el comando integrado `prompt.paste` (OpenCode lee el portapapeles del sistema
- * e inserta el texto en el prompt). Es el puente soportado, ya que el API
- * público de plugins no expone una escritura directa sobre el input.
+ * Aquí vive solo lo específico del host: el botón de la barra de entrada, el
+ * atajo/paleta, los toasts y la inserción del texto en el prompt (portapapeles
+ * + comando interno `prompt.paste`, el único puente que expone el API de
+ * plugins). Grabar, transcribir y la máquina de estados son del núcleo.
  */
 export default Plugin.define({
   id: "whisper-dictation.tui",
   async setup(context) {
-    const base = resolveConfig(context.options)
-    const config: PluginConfig = { ...base, ffmpegPath: await resolveFfmpegPath(base.ffmpegPath) }
-
     const [state, setState] = createSignal<DictationState>("idle")
     const [pulse, setPulse] = createSignal(false)
-    let recorder: Recorder | undefined
     let pulseTimer: ReturnType<typeof setInterval> | undefined
 
     const startPulse = () => {
@@ -48,56 +37,38 @@ export default Plugin.define({
       context.ui.toast.show({ title: "Dictado", message, variant: "error", duration: 8_000 })
     }
 
-    const start = async () => {
-      if (state() !== "idle") return
-      try {
-        recorder = await Recorder.start(config)
-        setState("recording")
-        startPulse()
-      } catch (cause) {
-        recorder = undefined
-        fail(cause)
-      }
-    }
+    const dictation = await createDictation(context.options, {
+      onStateChange: (next) => {
+        setState(next)
+        if (next === "recording") startPulse()
+        else stopPulse()
+      },
+    })
 
-    const stop = async () => {
-      const active = recorder
-      if (!active) return
-      recorder = undefined
-      stopPulse()
-      setState("transcribing")
+    const runToggle = async () => {
       try {
-        await active.stop()
-        const transcript = (await transcribe(active.wavPath, config)).trim()
-        if (!transcript) {
+        const outcome = await dictation.toggle()
+        if (outcome.status === "empty") {
           context.ui.toast.show({ title: "Dictado", message: "No se detectó voz.", variant: "warning" })
-        } else {
-          await writeClipboard(transcript)
+        } else if (outcome.status === "transcribed") {
+          await writeClipboard(outcome.text)
           context.keymap.dispatch("prompt.paste")
           context.ui.toast.show({ title: "Dictado", message: "Texto insertado en el chat.", variant: "success" })
         }
       } catch (cause) {
         fail(cause)
-      } finally {
-        await active.cleanup()
-        setState("idle")
       }
     }
 
-    const toggle = () => {
-      if (state() === "recording") void stop()
-      else if (state() === "idle") void start()
-    }
-
     // --- Preparar el motor en segundo plano (descarga única la 1.ª vez) ---
-    if (config.warmup && config.backend === "faster-whisper" && (config.autoInstall || config.serviceCommand.length > 0)) {
-      void ensureService(config, (message) =>
+    void dictation
+      .prepare((message) =>
         context.ui.toast.show({ title: "Dictado: preparando motor", message, variant: "info", duration: 6_000 }),
-      ).catch((cause) => {
+      )
+      .catch((cause) => {
         const message = cause instanceof Error ? cause.message : String(cause)
         context.ui.toast.show({ title: "Dictado: motor", message, variant: "error", duration: 12_000 })
       })
-    }
 
     // --- Interfaz: botón de micrófono en la barra de entrada ---
     context.ui.slot({
@@ -120,7 +91,7 @@ export default Plugin.define({
 
         return (
           <box flexShrink={0}>
-            <text fg={color} onMouseUp={toggle}>
+            <text fg={color} onMouseUp={() => void runToggle()}>
               {label}
             </text>
           </box>
@@ -138,10 +109,10 @@ export default Plugin.define({
           title: "Dictado por voz (Whisper)",
           description: "Iniciar o detener la grabación y transcribir con Whisper local",
           group: "Dictado",
-          bind: config.keybind,
+          bind: resolveConfig(context.options).keybind,
           palette: true,
           slash: { name: "dictar" },
-          run: () => toggle(),
+          run: () => void runToggle(),
         },
       ],
       bindings: ["whisper-dictation.toggle"],
@@ -149,9 +120,7 @@ export default Plugin.define({
 
     return () => {
       stopPulse()
-      const active = recorder
-      recorder = undefined
-      if (active) void active.stop().then(() => active.cleanup())
+      return dictation.dispose()
     }
   },
 })

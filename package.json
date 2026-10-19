@@ -25,7 +25,8 @@
   ],
   "exports": {
     ".": "./src/index.ts",
-    "./tui": "./src/tui.tsx"
+    "./tui": "./src/tui.tsx",
+    "./dictation": "./src/dictation.ts"
   },
   "files": [
     "index.ts",
@@ -45,6 +46,10 @@
     "darwin",
     "linux"
   ],
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "pack:check": "npm pack --dry-run"
+  },
   "publishConfig": {
     "access": "public"
   },

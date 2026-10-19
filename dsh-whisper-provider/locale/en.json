@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Whisper local dictation",
+    "description": "Transcribes speech with Whisper on this machine and inserts the text into the draft."
+  }
+}

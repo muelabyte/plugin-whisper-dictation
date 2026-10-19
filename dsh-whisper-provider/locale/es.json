@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Dictado con Whisper local",
+    "description": "Transcribe voz con Whisper en este equipo e inserta el texto en el borrador."
+  }
+}

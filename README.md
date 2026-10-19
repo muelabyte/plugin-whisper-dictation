@@ -39,7 +39,7 @@ Luego **reinicia OpenCode** (`opencode service restart`) y abre una sesión.
 
 | Componente | ¿Hace falta instalarlo? |
 |---|---|
-| OpenCode v2 | Sí (probado con `2.0.31`). |
+| OpenCode v2 | Sí (probado con `2.0.32`). |
 | `ffmpeg` | **No**: se usa `ffmpeg-static` automáticamente. Si prefieres el tuyo, ponlo en el `PATH` o usa la opción `ffmpegPath`. |
 | Python | **No**: lo gestiona `uv` automáticamente. |
 | Modelo Whisper | **No**: se descarga solo. |
@@ -155,6 +155,34 @@ Ejemplo para **usar un motor ya instalado** (sin auto-setup):
 
 ---
 
+## 🧩 Usarlo fuera de OpenCode (avanzado)
+
+El núcleo de grabación/transcripción no depende de OpenCode y se puede importar
+desde cualquier host (un CLI, una extensión de editor, un script):
+
+```ts
+import { createDictation } from "opencode-whisper-dictation/dictation"
+
+const dictation = await createDictation({ language: "es", model: "medium" })
+
+await dictation.toggle()                 // empieza a grabar
+const result = await dictation.toggle()  // detiene y transcribe
+
+if (result.status === "transcribed") {
+  console.log(result.text)               // el host decide qué hacer con el texto
+}
+```
+
+- `result.status` es `"started"`, `"transcribed"`, `"empty"` (no se detectó voz)
+  o `"noop"` (no había nada que hacer).
+- El núcleo **no** escribe en ninguna app: en OpenCode, el adaptador copia al
+  portapapeles y dispara `prompt.paste`; otro host hará lo suyo.
+- `dispose()` detiene y limpia una grabación en curso.
+- Requiere un runtime que ejecute TypeScript (`bun`, `tsx` o el loader de
+  OpenCode): el paquete no incluye JavaScript compilado.
+
+---
+
 ## 🧰 Instalación manual del motor (alternativa)
 
 Si prefieres gestionar Python tú mismo:
@@ -207,8 +235,10 @@ Ver `examples/whisper-cpp.ps1`.
 
 ## 🚀 Publicar (para quien mantiene el repo)
 
-El repositorio ya está inicializado y con el commit inicial hecho. Solo faltan
-dos pasos: subirlo a GitHub y publicarlo en npm.
+El repositorio ya está inicializado (3 commits en `main`). Antes de publicar,
+valida la auto-instalación desde cero (procedimiento en
+`estado-proyecto/ESTADO-PROYECTO.md`, §8.1): es la única ruta que aún no se ha
+ejecutado nunca. Después quedan dos pasos: subirlo a GitHub y publicarlo en npm.
 
 ### 1. Subir a GitHub
 

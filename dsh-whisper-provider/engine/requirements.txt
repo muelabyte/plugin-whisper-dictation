@@ -1,0 +1,3 @@
+# Motor de transcripción local para el proveedor de DSH.
+# Versión fijada: es la probada con el sidecar y el modelo medium INT8.
+faster-whisper==1.2.1

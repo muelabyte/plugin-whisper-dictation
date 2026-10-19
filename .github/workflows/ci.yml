@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck:
+    name: typecheck (${{ matrix.os }}, node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      # Sin lockfile en el repo: se instala sin ejecutar postinstalls para no
+      # descargar el binario de ffmpeg-static (~80 MB) en cada job.
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: npm run typecheck
+      - name: Comprobar el contenido del paquete
+        if: matrix.os == 'ubuntu-latest' && matrix.node == 22
+        run: npm run pack:check
+      - name: Bundle DSH (sintaxis, pruebas y paquete)
+        if: matrix.os == 'ubuntu-latest' && matrix.node == 22
+        run: |
+          node --check dsh-whisper-provider/lib/index.js
+          node --check dsh-whisper-provider/lib/engine.js
+          npm --prefix dsh-whisper-provider test
+          npm --prefix dsh-whisper-provider run pack:check
