@@ -1,8 +1,6 @@
 /**
- * Entrypoint de servidor para plugins locales en directorio.
- *
- * OpenCode resuelve la entrada de servidor de un plugin local en directorio
- * buscando `<dir>/server.*` o `<dir>/index.*` (no usa `package.json#exports`
- * para rutas locales). Este shim reexporta la implementación real de `src/`.
+ * Shim de servidor para registrar el repositorio como plugin local.
+ * El paquete real vive en `opencode/`; este archivo solo mantiene compatibilidad
+ * con un registro `file:///.../plugin-whisper-dictation` (raíz del repo).
  */
-export { default } from "./src/index.ts"
+export { default } from "./opencode/src/index.ts"

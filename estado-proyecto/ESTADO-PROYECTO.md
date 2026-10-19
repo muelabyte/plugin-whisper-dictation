@@ -27,8 +27,8 @@
 | Inserción en el input | ✅ Hecho | portapapeles + `prompt.paste` |
 | Auto-instalación del motor | ✅ **Validada** | `uv`→Python 3.11→faster-whisper→sidecar→`/health` en 24 s (modelo `tiny`, `dataDir` temporal). Falta clean-machine con `medium` |
 | Multiplataforma (captura) | 🟡 Best-effort | macOS/Linux sin probar |
-| Paquete npm | ✅ Listo | `npm pack` → 22 archivos, 21,1 kB |
-| Typecheck (`tsc --noEmit`) | ✅ Hecho | `npm run typecheck` sin errores (incluye shims raíz) |
+| Paquete npm | ✅ Listo | `npm pack` (en `opencode/`) → 23 archivos, 22,5 kB |
+| Typecheck (`tsc --noEmit`) | ✅ Hecho | `cd opencode && npm run typecheck` sin errores |
 | Tests / CI | 🟡 Parcial | No hay tests; `.github/workflows/ci.yml` valida tipos y empaquetado |
 | Licencia | ✅ Hecho | Copyright corregido a `muelabyte` |
 | Repo git local | ✅ Hecho | **3** commits en `main` |
@@ -64,7 +64,7 @@ entrada de la TUI. Graba el micrófono, **transcribe localmente** con Whisper
 └───────────────────────────────────────────────────────────────────┘
                             │ HTTP 127.0.0.1:8756
                             ▼
-┌── whisper/server.py (sidecar: autoinstalado con uv o serviceCommand) ──┐
+┌── opencode/whisper/server.py (sidecar: autoinstalado con uv o serviceCommand) ──┐
 │  WhisperModel("medium", device="cpu", compute_type="int8")  ×1     │
 │  GET /health   ·   POST /transcribe { path, language } → { text }  │
 └───────────────────────────────────────────────────────────────────┘
@@ -124,46 +124,38 @@ y arranca el sidecar. Todo cacheado en el directorio de datos.
 ## 📁 4. Mapa de archivos
 
 ```
-proyecto-addtranscripcion-deepseek/
-├─ index.ts                     # shim SERVIDOR para registro local (reexporta src/index.ts)
-├─ tui.tsx                      # shim TUI para registro local (reexporta src/tui.tsx)
-├─ package.json                 # paquete npm (exports ".", "./tui", "./dictation"; files; scripts)
-├─ LICENSE                      # MIT (muelabyte)
-├─ README.md                    # doc de cara al usuario (instalación 1 línea + uso del núcleo)
-├─ CHANGELOG.md                 # historial del paquete de OpenCode
+plugin-whisper-dictation/
+├─ opencode/                     # paquete de OpenCode
+│  ├─ package.json              # npm (exports ".", "./tui", "./dictation")
+│  ├─ index.ts / tui.tsx        # shims para registro local
+│  ├─ src/
+│  │  ├─ index.ts               # plugin lado servidor (id: whisper-dictation)
+│  │  ├─ tui.tsx                # adaptador OpenCode: botón + keymap + pegado
+│  │  ├─ dictation.ts           # núcleo: grabar→transcribir (sin OpenCode)
+│  │  └─ config.ts, engine.ts, ffmpeg.ts, recorder.ts, transcribe.ts, clipboard.ts
+│  ├─ whisper/
+│  │  ├─ server.py              # sidecar HTTP faster-whisper
+│  │  └─ requirements.txt       # faster-whisper==1.2.1
+│  ├─ scripts/, examples/
+│  ├─ tsconfig.json
+│  └─ README.md, CHANGELOG.md, LICENSE
+├─ dsh-whisper-provider/         # paquete de DeepSeek Harness
+│  ├─ package.json, cordis.patch.yml
+│  ├─ lib/index.js, lib/engine.js
+│  ├─ engine/server.py          # copia de opencode/whisper/server.py
+│  ├─ engine/requirements.txt   # faster-whisper==1.2.1
+│  ├─ client.js, client.LICENSE
+│  ├─ test/provider.test.mjs
+│  ├─ locale/{en,es}.json, icon.svg
+│  └─ README.md, CHANGELOG.md, LICENSE
+├─ index.ts / tui.tsx           # shims raíz → opencode/src (registro local del repo)
+├─ package.json                 # envoltorio privado para instalación desde Git
+├─ README.md                    # índice del monorepo
 ├─ PUBLICAR.md                  # guía de publicación (mantenedor)
-├─ tsconfig.json                # typecheck de src/ + shims raíz
-├─ .github/workflows/ci.yml     # CI: typecheck en Ubuntu/Windows + pack:check
-├─ src/
-│  ├─ index.ts                  # plugin lado servidor (id: whisper-dictation)
-│  ├─ tui.tsx                   # adaptador OpenCode: 🎤 botón + keymap + toasts + pegado
-│  ├─ dictation.ts              # ⭐ núcleo: grabar→transcribir + estados (sin OpenCode)
-│  ├─ config.ts                 # opciones + defaults
-│  ├─ engine.ts                 # auto-instalación y arranque del sidecar (uv)
-│  ├─ ffmpeg.ts                 # resolución de ffmpeg (ffmpeg-static / PATH)
-│  ├─ recorder.ts               # captura multiplataforma (dshow/avfoundation/pulse)
-│  ├─ transcribe.ts             # cliente del sidecar / backend whisper.cpp
-│  └─ clipboard.ts              # escritura al portapapeles multiplataforma
-├─ whisper/
-│  ├─ server.py                 # sidecar HTTP faster-whisper
-│  └─ requirements.txt          # faster-whisper>=1.0.0
-├─ scripts/                     # instalación/arranque MANUAL (fallback)
-│  ├─ install-whisper.ps1
-│  ├─ run-whisper.ps1
-│  └─ list-audio-devices.ps1
-├─ examples/                    # opencode.jsonc, cli.json, whisper-cpp.ps1
-├─ estado-proyecto/
-│  └─ ESTADO-PROYECTO.md        # 👈 este documento
-└─ dsh-whisper-provider/        # paquete npm: proveedor Whisper para DSH
-   ├─ package.json              # dsh.bundle.patch, files, publishConfig
-   ├─ cordis.patch.yml          # inserta servicio + proveedor + remote + UI de voz
-   ├─ lib/index.js              # registra whisper-local; transcripción
-   ├─ lib/engine.js             # uv fijado → venv → faster-whisper → sidecar
-   ├─ engine/server.py          # copia de whisper/server.py (test de hash)
-   ├─ engine/requirements.txt   # faster-whisper==1.2.1
-   ├─ test/provider.test.mjs    # pruebas del proveedor y del paquete
-   ├─ locale/{en,es}.json, icon.svg
-   └─ LICENSE
+├─ LICENSE
+├─ .github/workflows/ci.yml     # typecheck (opencode) + tests/pack (DSH)
+└─ estado-proyecto/
+   └─ ESTADO-PROYECTO.md        # este documento
 ```
 
 ---
@@ -203,9 +195,9 @@ proyecto-addtranscripcion-deepseek/
 | Plugin carga en OpenCode 2.0.32 | ✅ `state: active`, `server:true, tui:true` |
 | Botón 🎤 en la TUI + grabar/detener | ✅ confirmado por el usuario |
 | Sidecar del `.venv` manual | ✅ `/health` → `ok` (medium, int8, cpu) |
-| `npm run typecheck` (tsc 5.9, incluye shims) | ✅ sin errores |
+| `cd opencode && npm run typecheck` (tsc 5.9) | ✅ sin errores |
 | Núcleo `createDictation` (sin deps de OpenCode) | ✅ 6 escenarios con deps inyectadas (`tsx`) |
-| `npm pack --dry-run` | ✅ 22 archivos, 21,1 kB |
+| `npm pack --dry-run` (en `opencode/`) | ✅ 23 archivos, 22,5 kB |
 | Nombre `opencode-whisper-dictation` libre en npm | ✅ (404) |
 | Patrón de descarga `fetch`→`pipeline`→`createWriteStream` | ✅ probado aislado (HTTP 200, 4,8 kB) |
 | **Auto-instalación `uv`→venv→`faster-whisper`→sidecar** | ❌ **Nunca ejecutada** (ver §7.1) |
@@ -241,7 +233,7 @@ Además:
    `.github/workflows/ci.yml`. `tsconfig` ahora incluye también los shims raíz.
 
 > **Lección:** `transpileModule` solo verifica sintaxis. El gate real es
-> `npm run typecheck` (y la CI). No dar por validado nada que no haya pasado por ahí.
+> `cd opencode && npm run typecheck` (y la CI). No dar por validado nada que no haya pasado por ahí.
 
 ---
 
@@ -320,7 +312,7 @@ opencode plugin add opencode-whisper-dictation
 | OpenCode CLI | `2.0.32` (`@opencode/plugin` 2.0.32) |
 | Node | `v22.23.3` |
 | git | `2.56.0.windows.1` (identidad: `muelabyte`) |
-| `node_modules` | Instalado con `--ignore-scripts` solo para `npm run typecheck` (ignorado por git) |
+| `node_modules` | Raíz (para el plugin local) y `opencode/` (typecheck); ambos ignorados por git |
 | Sidecar en uso | `http://127.0.0.1:8756` (modelo `medium`, INT8) |
 
 > ⚠️ Si los comandos del agente fallan con `SetNamedSecurityInfoW failed ... grantWrite`,
@@ -338,7 +330,7 @@ opencode plugin add opencode-whisper-dictation
       "serviceUrl": "http://127.0.0.1:8756",
       "language": "es", "model": "medium", "computeType": "int8",
       "keybind": "ctrl+alt+v", "healthTimeoutMs": 180000,
-      "serviceCommand": [".../.venv/Scripts/python.exe", ".../whisper/server.py",
+      "serviceCommand": [".../.venv/Scripts/python.exe", ".../opencode/whisper/server.py",
                          "--host","127.0.0.1","--port","8756",
                          "--model","medium","--compute-type","int8","--language","es"]
     }
@@ -353,9 +345,15 @@ opencode plugin add opencode-whisper-dictation
 ## 🔎 10. Cómo verificar rápido (comandos útiles)
 
 ```powershell
-# Tipos y empaquetado (lo primero tras cualquier cambio)
+# Tipos y empaquetado del paquete de OpenCode
+cd opencode
 npm run typecheck
 npm run pack:check
+cd ..
+
+# Pruebas y empaquetado del bundle de DSH
+npm --prefix dsh-whisper-provider test
+npm --prefix dsh-whisper-provider run pack:check
 
 # ¿El motor responde?
 Invoke-RestMethod http://127.0.0.1:8756/health
@@ -424,7 +422,7 @@ misma aplicación (aquí, `DSH_PROFILE=desktop` y `DSH_WEB_URL=http://127.0.0.1:
 | Auto-instalación de OpenCode (uv→venv→faster-whisper→sidecar) | ✅ 24 s, `/health` OK (tiny) |
 | Pruebas del bundle (registro, cleanup, preparación, rutas, paquete, hash, UI) | ✅ 9/9 |
 | Puente contra el sidecar real (audio TTS en español) | ✅ texto correcto (~11–12 s) |
-| `npm pack` del bundle | ✅ 13 archivos, 36,5 kB |
+| `npm pack` del bundle | ✅ 14 archivos, 37,4 kB |
 | Contrato `Transcript` (objeto estricto) | ✅ 0.1.1, verificado con audio real |
 | UI adaptada: id propio e inserción al terminar | ✅ 0.2.0, test estático |
 | Instalación por nombre y botón real en la UI | ⏳ pendiente de publicar en npm |
@@ -464,3 +462,4 @@ instalar por nombre desde Plugins.
 | 2026-10-18 | Fix 0.1.1: `transcribe` devuelve `Transcript` `{ text, audioSeconds, inferenceSeconds }`; el string provocaba el error `reading 'replace'` en la UI al insertar. 8/8 tests. |
 | 2026-10-18 | 0.2.0: UI de voz vendorizada (MIT) con inserción en el cursor al terminar; desaparece el aviso de borrador cambiado. 9/9 tests; 13 archivos, 36,5 kB. |
 | 2026-10-18 | Preparación del release: avisos en ambos README, CHANGELOGs, `PUBLICAR.md`, deps fijadas (`@opencode/plugin ^2.0.32`, `faster-whisper==1.2.1`) y auto-instalación de OpenCode validada (24 s). |
+| 2026-10-18 | Reestructuración: OpenCode pasa a `opencode/`; la raíz conserva shims y un `package.json` privado para que la instalación desde Git siga funcionando. Repo: `plugin-whisper-dictation`. |

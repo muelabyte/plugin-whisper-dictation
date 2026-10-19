@@ -4,11 +4,15 @@ Guía para publicar en GitHub y npm. Requiere tus cuentas y credenciales.
 
 ## Antes de publicar
 
-- [ ] `npm run typecheck` y `npm test` en verde.
-- [ ] `npm run pack:check` y, en `dsh-whisper-provider/`, `npm run pack:check`.
-- [ ] Versiones revisadas: raíz `0.2.0`, `dsh-whisper-provider` `0.2.0`.
+- [ ] `cd opencode; npm run typecheck` y `cd ../dsh-whisper-provider; npm test` en verde.
+- [ ] `npm run pack:check` en `opencode/` y en `dsh-whisper-provider/`.
+- [ ] Versiones revisadas: `opencode-whisper-dictation` `0.2.0`,
+  `dsh-whisper-provider` `0.2.0`.
 - [ ] `CHANGELOG.md` actualizado en ambos paquetes.
-- [ ] Repo de GitHub creado, público y vacío.
+- [ ] Repo de GitHub creado y subido.
+
+La `package.json` de la raíz es un **envoltorio privado** para instalar desde
+Git; no se publica.
 
 ## 1. GitHub
 
@@ -26,20 +30,19 @@ las pruebas del bundle de DSH y el `npm pack`.
 
 ## 2. npm
 
-Inicia sesión (2FA incluida) y publica **primero** el paquete de DSH y después
-el de OpenCode:
+Inicia sesión (2FA incluida) y publica los dos paquetes:
 
 ```powershell
-cd "C:\DESARROLLO AGENTES\proyecto-addtranscripcion-deepseek\dsh-whisper-provider"
+cd "C:\DESARROLLO AGENTES\proyecto-addtranscripcion-deepseek\opencode"
 npm login
 npm publish
 
-cd "C:\DESARROLLO AGENTES\proyecto-addtranscripcion-deepseek"
+cd "C:\DESARROLLO AGENTES\proyecto-addtranscripcion-deepseek\dsh-whisper-provider"
 npm publish
 ```
 
 Nombres comprobados como libres: `dsh-whisper-provider` y
-`opencode-whisper-dictation`.
+`opencode-whisper-dictation`. No ejecutes `npm publish` en la raíz: es privada.
 
 Verifica:
 

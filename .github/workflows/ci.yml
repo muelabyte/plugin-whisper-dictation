@@ -24,10 +24,14 @@ jobs:
           node-version: ${{ matrix.node }}
       # Sin lockfile en el repo: se instala sin ejecutar postinstalls para no
       # descargar el binario de ffmpeg-static (~80 MB) en cada job.
-      - run: npm install --ignore-scripts --no-audit --no-fund
-      - run: npm run typecheck
-      - name: Comprobar el contenido del paquete
+      - name: Typecheck del paquete de OpenCode
+        working-directory: opencode
+        run: |
+          npm install --ignore-scripts --no-audit --no-fund
+          npm run typecheck
+      - name: Comprobar el paquete de OpenCode
         if: matrix.os == 'ubuntu-latest' && matrix.node == 22
+        working-directory: opencode
         run: npm run pack:check
       - name: Bundle DSH (sintaxis, pruebas y paquete)
         if: matrix.os == 'ubuntu-latest' && matrix.node == 22

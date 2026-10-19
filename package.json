@@ -1,74 +1,31 @@
 {
   "name": "opencode-whisper-dictation",
   "version": "0.2.0",
+  "private": true,
   "type": "module",
-  "description": "Plugin de OpenCode: botón de micrófono en la barra de entrada del chat que transcribe voz a texto con Whisper medium cuantizado (local, INT8/GGUF).",
+  "description": "Envoltorio de compatibilidad para instalar el plugin de OpenCode desde Git; el paquete real vive en opencode/.",
   "license": "MIT",
-  "author": "muelabyte <muelabyte@users.noreply.github.com>",
-  "homepage": "https://github.com/muelabyte/plugin-whisper-dictation#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/muelabyte/plugin-whisper-dictation.git"
-  },
-  "bugs": {
-    "url": "https://github.com/muelabyte/plugin-whisper-dictation/issues"
-  },
-  "keywords": [
-    "opencode",
-    "opencode-plugin",
-    "whisper",
-    "dictation",
-    "speech-to-text",
-    "faster-whisper",
-    "voice",
-    "tui"
-  ],
   "exports": {
-    ".": "./src/index.ts",
-    "./tui": "./src/tui.tsx",
-    "./dictation": "./src/dictation.ts"
+    ".": "./opencode/src/index.ts",
+    "./tui": "./opencode/src/tui.tsx",
+    "./dictation": "./opencode/src/dictation.ts"
   },
   "files": [
-    "index.ts",
-    "tui.tsx",
-    "src",
-    "whisper",
-    "scripts",
-    "examples",
-    "README.md",
-    "CHANGELOG.md",
+    "opencode/index.ts",
+    "opencode/tui.tsx",
+    "opencode/src",
+    "opencode/whisper",
+    "opencode/scripts",
+    "opencode/examples",
     "LICENSE"
   ],
-  "engines": {
-    "node": ">=20"
-  },
-  "os": [
-    "win32",
-    "darwin",
-    "linux"
-  ],
-  "scripts": {
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "pack:check": "npm pack --dry-run"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "@opencode/plugin": "^2.0.32"
-  },
-  "optionalDependencies": {
-    "ffmpeg-static": "^5.2.0"
-  },
+  "engines": { "node": ">=20" },
+  "os": ["win32", "darwin", "linux"],
+  "dependencies": { "@opencode/plugin": "^2.0.32" },
+  "optionalDependencies": { "ffmpeg-static": "^5.2.0" },
   "peerDependencies": {
     "@opentui/core": ">=0.5.17",
     "@opentui/solid": ">=0.5.17",
     "solid-js": ">=1.9.0"
-  },
-  "devDependencies": {
-    "@opentui/core": ">=0.5.17",
-    "@opentui/solid": ">=0.5.17",
-    "solid-js": ">=1.9.0",
-    "typescript": "^5.6.0"
   }
 }

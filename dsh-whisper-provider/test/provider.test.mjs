@@ -125,7 +125,7 @@ test("client.js vendorizado usa el id propio e inserta en el cursor", async () =
 })
 
 test("engine/server.py no diverge del original del repositorio", async () => {
-  const original = join(bundle, "..", "whisper", "server.py")
+  const original = join(bundle, "..", "opencode", "whisper", "server.py")
   if (!existsSync(original)) return // instalado como paquete: no aplica
 
   const digest = async (path) =>
