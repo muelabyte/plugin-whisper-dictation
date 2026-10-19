@@ -10,6 +10,18 @@ entrada**, listo para editar y enviar.
 - 🚀 **Instalación de una línea**: el motor (Python + `faster-whisper` + modelo)
   se instala solo la primera vez usando [`uv`](https://docs.astral.sh/uv/).
 
+> ### ⚠️ Avisos antes de instalar
+>
+> - **Solo OpenCode v2 en la TUI.** OpenCode Desktop/web no admite plugins de interfaz.
+> - **Primera vez:** descarga ~2 GB (Python gestionado, `faster-whisper` y modelo
+>   `medium`). Hace falta internet, espacio en disco y unos minutos.
+> - **Todo es local:** el audio se procesa en tu equipo y se borra; no se envía a
+>   ningún servidor.
+> - **DeepSeek Harness es otra integración** (`dsh-whisper-provider`), experimental
+>   y fijada a DSH 0.2.1-rc.2. No actives a la vez el bundle oficial *Voice Input*.
+> - En DSH, si el micrófono no aparece tras instalar, cierra la aplicación **desde
+>   la bandeja del sistema** y vuelve a abrirla: la interfaz solo se recarga al arrancar.
+
 ---
 
 ## ⚡ Instalación (una línea)
@@ -191,6 +203,33 @@ aporta dictado Whisper en español a la UI de voz de **DeepSeek Harness
 borrador de DSH y aprovisiona su motor en `%LOCALAPPDATA%\dsh-whisper`, sin
 depender de ninguna carpeta del repositorio.
 
+### Instalar desde npm
+
+1. **Plugins** → **Add plugin** → escribe `dsh-whisper-provider` → **Install**.
+2. **Enable now**.
+3. Abre la tarjeta del bundle → **Download and prepare** (solo la primera vez).
+4. El micrófono aparece entre el selector de modelo y **Enviar**.
+
+### Instalar desde GitHub
+
+En **Add plugin** pega:
+
+```
+git+https://github.com/muelabyte/opencode-whisper-dictation.git#path:/dsh-whisper-provider
+```
+
+o `github:muelabyte/opencode-whisper-dictation#path:/dsh-whisper-provider`.
+El `#path:/dsh-whisper-provider` es obligatorio: el paquete vive en un
+subdirectorio; instalar solo el repositorio daría el plugin de OpenCode.
+
+> ⚠️ **Avisos de DSH**
+> - Integración **experimental**, fijada a DSH **0.2.1-rc.2**.
+> - **No actives** el bundle oficial *Voice Input* a la vez: usa las mismas filas.
+> - El motor se guarda en `%LOCALAPPDATA%\dsh-whisper`; borra esa carpeta para
+>   reiniciarlo. Desinstalar el bundle no la borra.
+> - Tras instalar o reemplazar el paquete, cierra DSH **desde la bandeja** y
+>   vuelve a abrirlo para cargar la interfaz.
+
 Instalación, configuración y desinstalación:
 [dsh-whisper-provider/README.md](dsh-whisper-provider/README.md).
 
@@ -248,45 +287,18 @@ Ver `examples/whisper-cpp.ps1`.
 
 ## 🚀 Publicar (para quien mantiene el repo)
 
-El repositorio ya está inicializado (3 commits en `main`). Antes de publicar,
-valida la auto-instalación desde cero (procedimiento en
-`estado-proyecto/ESTADO-PROYECTO.md`, §8.1): es la única ruta que aún no se ha
-ejecutado nunca. Después quedan dos pasos: subirlo a GitHub y publicarlo en npm.
+Guía completa: [PUBLICAR.md](PUBLICAR.md). Resumen:
 
-### 1. Subir a GitHub
+1. **GitHub**: crea `muelabyte/opencode-whisper-dictation` y sube `main`.
+2. **npm**: publica los dos paquetes (primero el de DSH):
+   ```powershell
+   cd dsh-whisper-provider; npm publish
+   cd ..; npm publish
+   ```
+3. Verifica con `npm view` y prueba la instalación por nombre en DSH y OpenCode.
 
-```bash
-git remote add origin https://github.com/muelabyte/opencode-whisper-dictation.git
-git push -u origin main
-```
-
-Con eso, cualquiera instala con:
-
-```bash
-opencode plugin add github:muelabyte/opencode-whisper-dictation
-```
-
-### 2. Publicar en npm
-
-```bash
-npm login
-npm publish
-```
-
-Ya está todo preparado: el nombre `opencode-whisper-dictation` está libre, y el
-`package.json` incluye `publishConfig.access: "public"`, expone los entrypoints
-que OpenCode espera (`exports["."]` y `exports["./tui"]`) y declara `files` con
-lo necesario. Comprueba el contenido del paquete antes de publicar con:
-
-```bash
-npm pack --dry-run
-```
-
-Después, cualquiera instala con:
-
-```bash
-opencode plugin add opencode-whisper-dictation
-```
+La auto-instalación del motor ya está validada: `uv` → Python 3.11 →
+`faster-whisper` → sidecar → `/health`.
 
 > **Nota sobre entrypoints:** al instalar **como paquete** (npm/Git), OpenCode
 > resuelve `./tui` y `.` desde `exports`. Al registrar un **directorio local**,

@@ -1,11 +1,12 @@
 {
   "name": "dsh-whisper-provider",
-  "version": "0.1.1",
-  "description": "Dictado local con Whisper para DeepSeek Harness: proveedor del servicio de voz con motor autosuficiente",
+  "version": "0.2.0",
+  "description": "Dictado local con Whisper para DeepSeek Harness: proveedor de voz, motor autosuficiente y micrófono con inserción al cursor",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
+    "./client": "./client.js",
     "./locale/*.json": "./locale/*.json",
     "./icon": "./icon.svg",
     "./cordis.patch.yml": "./cordis.patch.yml"
@@ -13,10 +14,13 @@
   "files": [
     "lib",
     "engine",
+    "client.js",
+    "client.LICENSE",
     "cordis.patch.yml",
     "locale",
     "icon.svg",
     "LICENSE",
+    "CHANGELOG.md",
     "README.md"
   ],
   "engines": {
@@ -52,6 +56,21 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-api-remotes",
+        "@deepseek-ai/dsh-api-session-controller",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-primitives",
+        "@deepseek-ai/dsh-api-gateway",
+        "@deepseek-ai/dsh-client-ui-plugin-manager"
+      ],
+      "external": [
+        "@deepseek-ai/dsh-api-gateway/client"
+      ]
     }
   }
 }

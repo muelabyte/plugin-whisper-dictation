@@ -101,6 +101,8 @@ test("el paquete incluye todo lo necesario en tiempo de ejecución", () => {
     "lib/engine.js",
     "engine/server.py",
     "engine/requirements.txt",
+    "client.js",
+    "client.LICENSE",
     "cordis.patch.yml",
     "icon.svg",
     "locale/es.json",
@@ -109,6 +111,17 @@ test("el paquete incluye todo lo necesario en tiempo de ejecución", () => {
   ]) {
     assert.ok(existsSync(join(bundle, file)), `falta ${file}`)
   }
+})
+
+test("client.js vendorizado usa el id propio e inserta en el cursor", async () => {
+  const source = await readFile(join(bundle, "client.js"), "utf8")
+  assert.ok(source.includes('id: "dsh-whisper-provider"'), "el módulo debe registrar el id del paquete")
+  assert.ok(
+    source.includes("insertText(result.value.text, inputActions.captureInsertion())"),
+    "debe capturar el cursor al terminar, no al empezar",
+  )
+  assert.ok(!source.includes("@deepseek-ai/dsh-experimental-client-ui-voice-input"), "sin ids heredados")
+  assert.ok(existsSync(join(bundle, "client.LICENSE")), "la UI adaptada conserva su licencia MIT")
 })
 
 test("engine/server.py no diverge del original del repositorio", async () => {

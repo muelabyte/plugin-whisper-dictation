@@ -1,3 +1,4 @@
 # Motor de transcripción local (Whisper medium cuantizado INT8 en CPU).
 # faster-whisper usa CTranslate2, que es lo que habilita compute_type="int8".
-faster-whisper>=1.0.0
+# Versión fijada: es la probada con el sidecar y el modelo medium INT8.
+faster-whisper==1.2.1

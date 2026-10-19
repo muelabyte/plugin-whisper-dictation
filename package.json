@@ -36,6 +36,7 @@
     "scripts",
     "examples",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE"
   ],
   "engines": {
@@ -54,7 +55,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@opencode/plugin": "latest"
+    "@opencode/plugin": "^2.0.32"
   },
   "optionalDependencies": {
     "ffmpeg-static": "^5.2.0"

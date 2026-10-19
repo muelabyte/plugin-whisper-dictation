@@ -25,7 +25,7 @@
 | Grabación (ffmpeg) | ✅ Hecho | `dshow` en Windows |
 | Transcripción (Whisper local) | ✅ Hecho | `faster-whisper` 1.2.1 medium INT8 (`.venv` manual) |
 | Inserción en el input | ✅ Hecho | portapapeles + `prompt.paste` |
-| Auto-instalación del motor | ❌ **No validada** | Nunca se ejecutó (`dataDir` no existe). Bug `createWriteStream` corregido el 2026-10-18 (§7.1); falta prueba real desde cero |
+| Auto-instalación del motor | ✅ **Validada** | `uv`→Python 3.11→faster-whisper→sidecar→`/health` en 24 s (modelo `tiny`, `dataDir` temporal). Falta clean-machine con `medium` |
 | Multiplataforma (captura) | 🟡 Best-effort | macOS/Linux sin probar |
 | Paquete npm | ✅ Listo | `npm pack` → 22 archivos, 21,1 kB |
 | Typecheck (`tsc --noEmit`) | ✅ Hecho | `npm run typecheck` sin errores (incluye shims raíz) |
@@ -130,6 +130,8 @@ proyecto-addtranscripcion-deepseek/
 ├─ package.json                 # paquete npm (exports ".", "./tui", "./dictation"; files; scripts)
 ├─ LICENSE                      # MIT (muelabyte)
 ├─ README.md                    # doc de cara al usuario (instalación 1 línea + uso del núcleo)
+├─ CHANGELOG.md                 # historial del paquete de OpenCode
+├─ PUBLICAR.md                  # guía de publicación (mantenedor)
 ├─ tsconfig.json                # typecheck de src/ + shims raíz
 ├─ .github/workflows/ci.yml     # CI: typecheck en Ubuntu/Windows + pack:check
 ├─ src/
@@ -245,19 +247,15 @@ Además:
 
 ## 🚧 8. Qué FALTA
 
-### 8.1 Bloqueante antes de publicar (P0): probar la auto-instalación desde cero
+### 8.1 Auto-instalación del motor (P0) — ✅ validada
 
-Es la promesa del README y la única ruta que **nunca se ha ejecutado**. Procedimiento:
+Se ejecutó de extremo a extremo el 2026-10-18 sobre un `dataDir` temporal y el
+puerto 8758: `uv` → Python 3.11 → `faster-whisper` 1.2.1 → sidecar → `/health`
+OK en **24 s** (modelo `tiny`); después se paró el sidecar y se borró el
+`dataDir`. El fallo de `createWriteStream` queda cubierto por esta prueba.
 
-1. Renombrar o borrar `%LOCALAPPDATA%\opencode-whisper-dictation`.
-2. Quitar `serviceCommand` de las opciones y parar el sidecar manual (dejar libre el 8756).
-3. Abrir la TUI y dictar: debe descargar `uv`, crear el venv, instalar
-   `faster-whisper`, arrancar el sidecar y transcribir. Revisar
-   `<dataDir>\whisper-server.log` si algo falla.
-4. Repetir en una máquina **sin Python ni ffmpeg en el PATH**: es la prueba real
-   de la instalación de una línea.
-
-Sin este paso, publicar en npm expone a los usuarios a un fallo en el primer arranque.
+Queda como comprobación **opcional** repetirla en una máquina sin Python ni
+ffmpeg y con el modelo `medium` (la descarga de ~1,5 GB no se midió aquí).
 
 ### 8.2 Calidad pendiente (P1)
 
@@ -269,11 +267,15 @@ Sin este paso, publicar en npm expone a los usuarios a un fallo en el primer arr
 - **Empaquetado**: `locate()` resuelve rutas de fichero; probado solo como
   directorio local, no con el paquete instalado.
 - **macOS/Linux**: sin probar.
-- **Riesgos de publicación**: `@opencode/plugin: "latest"` (no reproducible),
-  `faster-whisper>=1.0.0` sin pin, `ffmpeg-static` opcional (si falla su
+- **Riesgos de publicación**: dependencias ya fijadas (`@opencode/plugin ^2.0.32`,
+  `faster-whisper==1.2.1`); `ffmpeg-static` sigue siendo opcional (si falla su
   postinstall, se cae a `ffmpeg` del PATH, que el usuario medio no tiene).
 
-### 8.3 Publicación (solo tras cerrar 8.1)
+### 8.3 Publicación
+
+Guía completa: `PUBLICAR.md`. Orden: subir a GitHub, publicar primero
+`dsh-whisper-provider` y después `opencode-whisper-dictation`, y probar ambas
+instalaciones por nombre.
 
 **1. Crear repo vacío en GitHub** (`opencode-whisper-dictation`, sin README/license).
 
@@ -379,9 +381,8 @@ misma aplicación (aquí, `DSH_PROFILE=desktop` y `DSH_WEB_URL=http://127.0.0.1:
 - DSH **0.2.1-rc.2** ya trae un dictado experimental basado en **SenseVoice**,
   desactivado por defecto. Sus idiomas son `auto, zh, en, yue, ja, ko`: **no español**.
 - Para español se publica el paquete npm **`dsh-whisper-provider`** (nombre
-  libre verificado): registra `whisper-local` en `ctx.speechToText` y reutiliza
-  el micrófono, la grabación y la inserción en el borrador de DSH. No
-  reimplementa interfaz.
+  libre verificado): registra `whisper-local` en `ctx.speechToText` y aporta su
+  propia UI de micrófono (mitad cliente), adaptada de la oficial.
 - **Distribución sin carpetas enlazadas**: el Plugin Manager instala por nombre
   y pnpm **copia** el paquete al perfil. Mover o renombrar el repositorio deja
   de afectar al plugin (el `link:` era solo el modo de desarrollo).
@@ -393,6 +394,14 @@ misma aplicación (aquí, `DSH_PROFILE=desktop` y `DSH_WEB_URL=http://127.0.0.1:
   (`unprepared → checking → downloading → loading → ready`, cancelable). La UI
   ofrece "Download and prepare"; `transcribe` nunca descarga dentro de la
   petición.
+- **UI de voz adaptada**: la mitad cliente parte de
+  `@deepseek-ai/dsh-experimental-client-ui-voice-input` (MIT, © DeepSeek),
+  fijada a 0.2.1-rc.2, con un cambio: al terminar inserta en el **cursor
+  actual** (`captureInsertion()`), no en el span capturado al empezar. Así se
+  puede escribir o mover el cursor durante el dictado sin el aviso
+  *"Your draft changed"*. Las claves de `plugins.bundle.config/activation`
+  apuntan a `dsh-whisper-provider`; la fila oficial `ui-voice-input` ya no se
+  inserta. Licencia en `client.LICENSE`.
 - El paquete es autosuficiente: incluye `engine/server.py` y
   `engine/requirements.txt`; un test de hash falla si divergen del original.
 - Si ya hay un sidecar sano en `serviceUrl` (el de OpenCode), se reutiliza y no
@@ -412,18 +421,21 @@ misma aplicación (aquí, `DSH_PROFILE=desktop` y `DSH_WEB_URL=http://127.0.0.1:
 | Prueba | Resultado |
 |---|---|
 | Aprovisionamiento limpio (uv→Python 3.11→faster-whisper→modelo tiny→`/health`) | ✅ 37 s, 347 MB |
-| Pruebas del bundle (registro, cleanup, preparación, rutas, paquete, hash) | ✅ 7/7 |
+| Auto-instalación de OpenCode (uv→venv→faster-whisper→sidecar) | ✅ 24 s, `/health` OK (tiny) |
+| Pruebas del bundle (registro, cleanup, preparación, rutas, paquete, hash, UI) | ✅ 9/9 |
 | Puente contra el sidecar real (audio TTS en español) | ✅ texto correcto (~11–12 s) |
-| `npm pack` del bundle | ✅ 11 archivos, 12,5 kB |
+| `npm pack` del bundle | ✅ 13 archivos, 36,5 kB |
 | Contrato `Transcript` (objeto estricto) | ✅ 0.1.1, verificado con audio real |
+| UI adaptada: id propio e inserción al terminar | ✅ 0.2.0, test estático |
 | Instalación por nombre y botón real en la UI | ⏳ pendiente de publicar en npm |
 
-**Pendiente:** `npm publish` (requiere tus credenciales), instalar por nombre
-desde Plugins y verificar el micrófono en Escritorio y Web. No se publicó desde
-esta sesión.
+**Pendiente:** reinstalar la **0.2.0** (quitar la 0.1.1 e instalar el nuevo
+tarball) y comprobar que el aviso *"Your draft changed"* desaparece al escribir
+durante el dictado. Después, `npm publish` (requiere tus credenciales) para
+instalar por nombre desde Plugins.
 
 > ⚠️ No activar a la vez el bundle oficial **Voice Input**: inserta las mismas
-> filas (`speech-to-text`, `api-speech-to-text`, `ui-voice-input`) y hay conflicto
+> filas (`speech-to-text`, `api-speech-to-text`) y hay conflicto
 > de ids. `dsh-whisper-provider` es autosuficiente.
 
 ---
@@ -450,3 +462,5 @@ esta sesión.
 | 2026-10-18 | Se añade `dsh-whisper-provider/`: proveedor Whisper para la UI de voz de DeepSeek Harness 0.2.1-rc.2 (Web y Escritorio). Puente verificado; instalación en el perfil pendiente. |
 | 2026-10-18 | DSH pasa a paquete npm (`dsh-whisper-provider`) con motor en `%LOCALAPPDATA%\dsh-whisper` y preparación visible en la UI. Aprovisionamiento limpio verificado (uv 0.13.1 → Python 3.11 → faster-whisper 1.2.1 → modelo) en 37 s. Pendiente: `npm publish`. |
 | 2026-10-18 | Fix 0.1.1: `transcribe` devuelve `Transcript` `{ text, audioSeconds, inferenceSeconds }`; el string provocaba el error `reading 'replace'` en la UI al insertar. 8/8 tests. |
+| 2026-10-18 | 0.2.0: UI de voz vendorizada (MIT) con inserción en el cursor al terminar; desaparece el aviso de borrador cambiado. 9/9 tests; 13 archivos, 36,5 kB. |
+| 2026-10-18 | Preparación del release: avisos en ambos README, CHANGELOGs, `PUBLICAR.md`, deps fijadas (`@opencode/plugin ^2.0.32`, `faster-whisper==1.2.1`) y auto-instalación de OpenCode validada (24 s). |
